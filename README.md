@@ -36,3 +36,38 @@ You can install PixelPeek directly from the [Chrome Web Store](https://chrome.go
 4. You can also view the pixel sizes for dynamically loaded content, thanks to the built-in MutationObserver.
 
 
+
+## Privacy Policy
+
+PixelPeek does not collect, store, or share any personal information. All operations are performed locally in your browser, and no data is transmitted to external servers. For full details, please see our [Privacy Policy](https://pixelpeek.site/privacy.html).
+
+## Website
+
+For more information, visit the official website: [https://pixelpeek.site](https://pixelpeek.site).
+
+## Support
+
+If you encounter any issues or have questions, feel free to reach out to us via our [Support Page](https://pixelpeek.site/support.html) or open an issue here on GitHub.
+
+## Contributing
+
+We welcome contributions from the community! If you’d like to contribute to PixelPeek, please follow these steps:
+
+1. Fork the repository.
+2. Create a new feature branch: `git checkout -b feature-name`.
+3. Commit your changes: `git commit -m 'Add feature'`.
+4. Push to the branch: `git push origin feature-name`.
+5. Submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+### Contact
+- **Website**: [https://pixelpeek.site](https://pixelpeek.site)
+- **Support**: [pixelpeek.srujanchidarla@gmail.com](mailto:pixelpeek.srujanchidarla@gmail.com)
+
+Enjoy using PixelPeek!
+
