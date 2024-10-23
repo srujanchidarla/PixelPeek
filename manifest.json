@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "PixelPeek",
-  "version": "1.0",
-  "description": "Displays pixel rates of images and videos when hovered.",
+  "version": "1.1",
+  "description": "Displays original and displayed pixel sizes of media elements when hovered.",
   "permissions": ["activeTab", "scripting"],
   "action": {
     "default_icon": {
