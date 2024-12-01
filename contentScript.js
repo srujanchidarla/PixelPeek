@@ -1,26 +1,32 @@
-// Create and style the tooltip for displaying dimensions
+// Create a div to display the pixel dimensions
 const tooltip = document.createElement("div");
+tooltip.style.position = "absolute";
+tooltip.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+tooltip.style.color = "white";
+tooltip.style.padding = "5px";
+tooltip.style.borderRadius = "4px";
+tooltip.style.zIndex = "1000";
+tooltip.style.fontSize = "12px";
+tooltip.style.display = "none"; // Initially hidden
+tooltip.style.pointerEvents = "none"; // Prevent interaction with the tooltip itself
 document.body.appendChild(tooltip);
-tooltip.style = `
-    position: fixed; 
-    background-color: rgba(0, 0, 0, 0.9); 
-    color: white;
-    padding: 8px 10px; 
-    border-radius: 6px; 
-    z-index: 10000; 
-    font-size: 14px; 
-    font-family: Arial, sans-serif;
-    display: none; 
-    pointerEvents: none; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-`;
 
 // Function to show the tooltip with dimension information
-function showTooltip(event, width, height) {
-  tooltip.style.left = `${event.clientX + 20}px`; // Offset from cursor to avoid blocking it
-  tooltip.style.top = `${event.clientY + 20}px`;
-  tooltip.textContent = `Width: ${width}px, Height: ${height}px`;
+function showTooltip(
+  event,
+  displayedWidth,
+  displayedHeight,
+  originalWidth,
+  originalHeight
+) {
+  tooltip.style.left = `${event.pageX + 10}px`; // Slightly offset from the cursor
+  tooltip.style.top = `${event.pageY + 10}px`;
+  tooltip.innerHTML = `
+    <div>
+      <strong>Displayed:</strong> ${displayedWidth}px × ${displayedHeight}px<br>
+      <strong>Original:</strong> ${originalWidth}px × ${originalHeight}px
+    </div>
+  `;
   tooltip.style.display = "block";
 }
 
@@ -28,6 +34,53 @@ function showTooltip(event, width, height) {
 function hideTooltip() {
   tooltip.style.display = "none";
 }
+
+// Function to add hover listeners to various elements including buttons
+function addHoverListeners() {
+  // Select all images, videos, SVGs, canvas, iframes, link icons (like share, WhatsApp, etc.), and buttons
+  const mediaElements = [
+    ...document.images,
+    ...document.querySelectorAll("video, svg, canvas, iframe"),
+    // Adding icons (anchor tags with common classes or specific hrefs for share buttons)
+    ...document.querySelectorAll(
+      'a[href*="whatsapp"], a[href*="share"], a[href*="delete"], a[href*="netflix"], a[href*="add"]'
+    ),
+    // Adding button elements and divs/spans that act as buttons
+    ...document.querySelectorAll(
+      'button, .button, [role="button"], div[onclick], span[onclick]'
+    ),
+  ];
+
+  mediaElements.forEach((el) => {
+    // Function to get dimensions and show tooltip
+    const updateTooltip = (event) => {
+      const rect = el.getBoundingClientRect();
+      const displayedWidth = rect.width;
+      const displayedHeight = rect.height;
+      const originalWidth = el.naturalWidth || el.videoWidth || displayedWidth;
+      const originalHeight =
+        el.naturalHeight || el.videoHeight || displayedHeight;
+      showTooltip(
+        event,
+        displayedWidth,
+        displayedHeight,
+        originalWidth,
+        originalHeight
+      );
+    };
+
+    // Mouse enters the media element
+    el.addEventListener("mouseover", updateTooltip);
+    // Mouse moves within the media element, keeping the tooltip visible
+    el.addEventListener("mousemove", updateTooltip);
+    // Mouse leaves the media element, hide the tooltip
+    el.addEventListener("mouseout", hideTooltip);
+  });
+}
+
+// Call the function to add hover listeners
+addHoverListeners();
+
 // Debounce function to limit the rate at which functions can fire
 const debounce = (func, delay) => {
   let debounceTimer;
@@ -38,24 +91,6 @@ const debounce = (func, delay) => {
     debounceTimer = setTimeout(() => func.apply(context, args), delay);
   };
 };
-
-// Debounced hover handler
-const handleHover = debounce((event, el) => {
-  const rect = el.getBoundingClientRect();
-  showTooltip(event, rect.width, rect.height);
-}, 50); // Reduced debounce time to 50ms for smoother interaction
-
-// Function to add hover listeners selectively
-function addHoverListeners() {
-  const selector = `
-        a, button, img, select, textarea, form, label, fieldset, legend, datalist,
-        output, iframe, map, area, canvas, svg, video, audio, progress, meter
-    `;
-  document.querySelectorAll(selector).forEach((el) => {
-    el.addEventListener("mouseover", (event) => handleHover(event, el));
-    el.addEventListener("mouseout", hideTooltip);
-  });
-}
 
 // Observe for dynamically loaded content with optimized settings
 const observer = new MutationObserver(
@@ -79,13 +114,11 @@ observer.observe(document.body, {
 function cleanup() {
   observer.disconnect();
   document.querySelectorAll("*").forEach((el) => {
-    el.removeEventListener("mouseover", handleHover);
+    el.removeEventListener("mouseover", updateTooltip);
+    el.removeEventListener("mousemove", updateTooltip);
     el.removeEventListener("mouseout", hideTooltip);
   });
 }
 
 // Attach cleanup to page unload event
 window.addEventListener("unload", cleanup);
-
-// Initialize listeners initially
-addHoverListeners();

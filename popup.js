@@ -36,7 +36,7 @@ function getMediaPixelRates() {
   ];
   return mediaElements.map((el) => ({
     type: el.tagName.toLowerCase(),
-    width: el.videoWidth || el.naturalWidth || 0,
-    height: el.videoHeight || el.naturalHeight || 0,
+    width: el.videoWidth || el.naturalWidth || el.clientWidth || 0,
+    height: el.videoHeight || el.naturalHeight || el.clientHeight || 0,
   }));
 }
