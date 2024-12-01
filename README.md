@@ -11,10 +11,10 @@
 
 ## Installation
 
-You can install PixelPeek directly from the [Chrome Web Store](https://chrome.google.com/webstore/detail/your-extension-id) or follow the manual installation steps below.
+You can install PixelPeek directly from the [Chrome Web Store](https://chromewebstore.google.com/detail/pixelpeek/ffdgajgkgcjecfimkhpaopkhfoekjhnb) or follow the manual installation steps below.
 
 ### From Chrome Web Store:
-1. Go to the [Chrome Web Store](https://chrome.google.com/webstore/detail/your-extension-id).
+1. Go to the [Chrome Web Store](https://chromewebstore.google.com/detail/pixelpeek/ffdgajgkgcjecfimkhpaopkhfoekjhnb).
 2. Click the **Add to Chrome** button.
 3. Confirm by clicking **Add Extension**.
 
