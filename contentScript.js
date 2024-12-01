@@ -1,4 +1,4 @@
-// Create a div to display the pixel dimensions
+// Create and style the tooltip for displaying dimensions
 const tooltip = document.createElement("div");
 tooltip.style.position = "absolute";
 tooltip.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
@@ -35,47 +35,57 @@ function hideTooltip() {
   tooltip.style.display = "none";
 }
 
-// Function to add hover listeners to various elements including buttons
+// Function to handle hover and show tooltip
+function handleHover(event) {
+  const el = event.target;
+  const rect = el.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) {
+    const displayedWidth = rect.width;
+    const displayedHeight = rect.height;
+    const originalWidth = el.naturalWidth || el.videoWidth || displayedWidth;
+    const originalHeight =
+      el.naturalHeight || el.videoHeight || displayedHeight;
+    showTooltip(
+      event,
+      displayedWidth,
+      displayedHeight,
+      originalWidth,
+      originalHeight
+    );
+  }
+}
+
+// Create an IntersectionObserver to manage visibility
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      const el = entry.target;
+      if (entry.isIntersecting) {
+        // Add event listeners for showing and hiding the tooltip
+        el.addEventListener("mousemove", handleHover);
+        el.addEventListener("mouseleave", hideTooltip);
+      } else {
+        // Remove event listeners when the element is not in view
+        el.removeEventListener("mousemove", handleHover);
+        el.removeEventListener("mouseleave", hideTooltip);
+      }
+    });
+  },
+  {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.1,
+  }
+);
+
+// Function to add hover listeners to elements using IntersectionObserver
 function addHoverListeners() {
-  // Select all images, videos, SVGs, canvas, iframes, link icons (like share, WhatsApp, etc.), and buttons
-  const mediaElements = [
-    ...document.images,
-    ...document.querySelectorAll("video, svg, canvas, iframe"),
-    // Adding icons (anchor tags with common classes or specific hrefs for share buttons)
-    ...document.querySelectorAll(
-      'a[href*="whatsapp"], a[href*="share"], a[href*="delete"], a[href*="netflix"], a[href*="add"]'
-    ),
-    // Adding button elements and divs/spans that act as buttons
-    ...document.querySelectorAll(
-      'button, .button, [role="button"], div[onclick], span[onclick]'
-    ),
-  ];
-
-  mediaElements.forEach((el) => {
-    // Function to get dimensions and show tooltip
-    const updateTooltip = (event) => {
-      const rect = el.getBoundingClientRect();
-      const displayedWidth = rect.width;
-      const displayedHeight = rect.height;
-      const originalWidth = el.naturalWidth || el.videoWidth || displayedWidth;
-      const originalHeight =
-        el.naturalHeight || el.videoHeight || displayedHeight;
-      showTooltip(
-        event,
-        displayedWidth,
-        displayedHeight,
-        originalWidth,
-        originalHeight
-      );
-    };
-
-    // Mouse enters the media element
-    el.addEventListener("mouseover", updateTooltip);
-    // Mouse moves within the media element, keeping the tooltip visible
-    el.addEventListener("mousemove", updateTooltip);
-    // Mouse leaves the media element, hide the tooltip
-    el.addEventListener("mouseout", hideTooltip);
-  });
+  const elements = `
+    img, i, svg, p, span, h1, h2, h3, h4, h5, h6, strong, b, em, i, div, section, header, footer,
+    aside, article, nav, button, a, input, select, textarea, video, audio, canvas, iframe, ul, ol,
+    li, table, tr, td, th, progress, meter, hr, figure, figcaption
+  `;
+  document.querySelectorAll(elements).forEach((el) => observer.observe(el));
 }
 
 // Call the function to add hover listeners
@@ -93,7 +103,7 @@ const debounce = (func, delay) => {
 };
 
 // Observe for dynamically loaded content with optimized settings
-const observer = new MutationObserver(
+const mutationObserver = new MutationObserver(
   debounce((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.addedNodes.length) {
@@ -104,19 +114,19 @@ const observer = new MutationObserver(
 );
 
 // Start observing with optimized options
-observer.observe(document.body, {
+mutationObserver.observe(document.body, {
   childList: true,
   subtree: true,
   attributes: false,
 });
 
-// Cleanup function to remove all listeners and observer
+// Cleanup function to disconnect the observer and remove event listeners
 function cleanup() {
   observer.disconnect();
+  mutationObserver.disconnect();
   document.querySelectorAll("*").forEach((el) => {
-    el.removeEventListener("mouseover", updateTooltip);
-    el.removeEventListener("mousemove", updateTooltip);
-    el.removeEventListener("mouseout", hideTooltip);
+    el.removeEventListener("mousemove", handleHover);
+    el.removeEventListener("mouseleave", hideTooltip);
   });
 }
 
